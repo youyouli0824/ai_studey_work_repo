@@ -84,6 +84,30 @@ for x in range(101):
         if z % 3 == 0 and 5*x + 3*y + z//3 == 100:
             print(f"可以买公鸡{x}只，母鸡{y}只，小鸡{z}只")
 
+print("\n--------9--------")
+list_9=["西瓜","水杯","辣条"]
+while True:
+    do=int(input("您现在要做什么？添加商品请按1；删除商品请按2；查看清单请按3；退出系统请按4。"))
+    if do==1:
+        add=input("请输入您需要添加的商品名字：")
+        list_9.append(add)
+        print("添加成功！")
+    elif do==2:
+        dele=input("请输入您需要删除的商品名字：")
+        if dele in list_9:
+            list_9.remove(dele)
+            print("成功删除商品！")
+        else:
+            print("您没有购买该商品。")
+    elif do==3:
+        print("您的购物清单：")
+        for i in list_9:
+            print(i,end="\t")
+        print(f"一共有{len(list_9)}件商品。")
+    else:
+        print("byebye")
+        break
+
 print("\n--------n1--------")
 print("斐波那契数列是从0和1开始，后面的每一项都是前两项之和")
 count_n1=int(input("请输入一个正整数："))
