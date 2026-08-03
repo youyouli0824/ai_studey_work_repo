@@ -12,3 +12,11 @@ info=jpg_read.read()
 jpg_write.write(info)
 jpg_read.close()
 jpg_write.close()
+
+with open("练习python文件\A.txt","r",encoding="utf-8") as f:
+    content=f.read()
+    char=len(content)
+    line=content.count("\n")+1
+    keyword="Python"
+    keyword_count=content.count(keyword)
+print(char,line,keyword_count)
