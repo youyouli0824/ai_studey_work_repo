@@ -121,3 +121,5 @@ def update_student(student_id: int, student: dict):
             s["info"] = student.get("info", s["info"])
             return {"msg": "修改成功", "student": s}
     return "查无此人"
+
+
