@@ -5,6 +5,7 @@ import re
 from typing import Optional, List
 from fastapi import FastAPI, HTTPException,Body,Form
 from pydantic import BaseModel, Field
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 books_db: List[dict] = []   # 用内存列表模拟数据库，保存创建成功的图书
@@ -128,3 +129,21 @@ def submit_feedback(
         "content_length": len(content),
         "message": "留言发表成功！"
     }
+
+
+@app.get("/welcome", response_class=HTMLResponse, summary="返回 HTML 渲染页面")
+def get_welcome_page():
+    html_content = """
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>FastAPI 欢迎页</title>
+        </head>
+        <body>
+            <h1 style="color: blue;">🎉 欢迎大一新生学习 FastAPI 课程！</h1>
+            <p>这是直接由 FastAPI 后端渲染返回的网页内容。</p>
+        </body>
+    </html>
+    """
+    return HTMLResponse(content=html_content, status_code=200)
+
