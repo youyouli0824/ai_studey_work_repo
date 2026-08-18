@@ -1,0 +1,79 @@
+/* ========== 全局样式与设计变量 ========== */
+:root {
+  --app-primary: #2563eb;
+  --app-primary-light: #60a5fa;
+  --app-success: #10b981;
+  --app-warning: #f59e0b;
+  --app-danger: #ef4444;
+  --app-text-main: #1f2937;
+  --app-text-sub: #6b7280;
+  --app-bg: #f1f5f9;
+  --app-card-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --app-card-shadow-hover: 0 10px 24px rgba(15, 23, 42, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+  color: var(--app-text-main);
+  background-color: var(--app-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 通用页面容器与卡片 */
+.page {
+  padding: 20px;
+}
+
+.app-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: var(--app-card-shadow);
+  padding: 20px;
+  transition: box-shadow 0.25s ease;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--app-text-main);
+}
+
+.page-subtitle {
+  font-size: 13px;
+  color: var(--app-text-sub);
+  margin: 4px 0 0;
+}
+
+/* 表格操作按钮间距 */
+.el-table {
+  --el-table-header-bg-color: #f8fafc;
+  --el-table-header-text-color: #475569;
+  --el-table-border-color: #eef2f7;
+}
