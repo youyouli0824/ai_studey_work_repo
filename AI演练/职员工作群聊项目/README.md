@@ -1,42 +1,75 @@
-# 职工信息管理系统
+# 职员各部门工作交流系统
 
-基于 **Vue 3 + Vite + Element Plus + ECharts** 的前端，配合 **FastAPI + MySQL** 后端，
-实现对职工信息的增删改查、分页浏览、多条件查询、分类统计与仪表盘总览。
+基于 **Vue 3 + Vite + Element Plus + ECharts** 的前端，配合 **FastAPI + MySQL** 后端的
+职员办公交流平台。在原「职工信息管理系统」（员工 CRUD / 查询 / 统计）基础上升级而来：
+新增登录鉴权、三级角色权限、部门群聊 / 全员群聊 / 职员私聊、个人中心与头像、禁言管理、总裁管理。
 
 ## 技术栈
 
 | 层 | 技术 |
 |---|---|
-| 前端 | Vue 3（组合式 API）、Vite 7、Vue Router、Element Plus、Axios、ECharts |
-| 后端 | FastAPI、SQLAlchemy、PyMySQL（`MySQL_Project_backend/`） |
-| 数据库 | MySQL（`my-first-sql` 库，`t_employees` 107 条样例数据） |
+| 前端 | Vue 3（组合式 API）、Vite 7、Vue Router 4、Element Plus、Axios、ECharts |
+| 后端 | Python 3.14、FastAPI、SQLAlchemy、PyMySQL（`MySQL_Project_backend/`） |
+| 数据库 | MySQL（`my-first-sql` 库，`t_employees` 107 条数据） |
+
+## 角色权限
+
+| 角色 | 权限 |
+|---|---|
+| 普通职员 | 个人中心、修改密码、上传头像、部门群聊（仅同部门）、全员群聊、职员私聊 |
+| 管理部门职员 | 普通职员全部功能 + 员工管理（对普通职员增删改查）、信息面板（仪表盘/统计）、禁言管理 |
+| 总裁 | 管理部门职员全部功能 + 管理部门任免（授予/撤销管理权限） |
+
+**登录**：账号为**职员姓名**（英文不区分大小写）或**员工编号**（如 `207`），初始密码 `123456`。
+**预置**：总裁 = 员工 207「鲤悠悠」；管理部门职员 = 员工 100/101/102；其余为普通职员。
 
 ## 目录结构
 
 ```
-连接数据库的Vue项目/
-├── MySQL_Project_backend/   # FastAPI 后端（原有，已扩展新接口）
+职员各部门工作群聊项目/
+├── MySQL_Project_backend/   # FastAPI 后端
+│   ├── main.py              # 全部接口（登录/角色/群聊/私聊/禁言/总裁管理/员工管理/统计）
+│   ├── models.py            # ORM 模型（员工 + 群聊消息/私聊消息/禁言表）
+│   ├── schemas.py           # Pydantic 请求/响应模型
+│   ├── security.py          # 密码哈希(PBKDF2) + 登录 token(HMAC 签名)
+│   ├── migrate.py           # 数据库迁移（加列 + 角色预置 + 默认密码）
+│   └── uploads/avatars/     # 上传的头像文件
 ├── index.html
 ├── package.json
-├── vite.config.js           # @ 别名、/api 代理到 8000
+├── vite.config.js           # @ 别名、/api 与 /uploads 代理到 8000
 ├── public/
+├── 分析类文件/              # 需求文档 / 开发问题文档 / 接口文档
 └── src/
     ├── main.js              # 入口（Element Plus 中文 locale + 路由）
     ├── style.css            # 全局主题
-    ├── router/              # 路由（/dashboard /employees /stats）
-    ├── api/index.js         # Axios 封装 + 全部接口函数
+    ├── store/auth.js        # 登录状态（token + 用户信息，localStorage 持久化）
+    ├── router/              # 路由 + 登录/角色守卫
+    ├── api/index.js         # Axios 封装（自动携带 token、401 跳转）+ 全部接口函数
     ├── utils/               # 格式化工具 + 中文映射字典
-    ├── components/ChartBox.vue   # ECharts 通用封装
-    ├── layout/MainLayout.vue     # 侧边栏 + 顶栏布局
+    ├── components/ChartBox.vue
+    ├── layout/MainLayout.vue     # 角色化侧边栏 + 顶栏用户信息
     └── views/
-        ├── Dashboard.vue    # 仪表盘（统计卡片 + 4 图表 + 最近入职）
-        ├── EmployeeList.vue # 员工管理（增删改查 + 多条件查询 + 分页）
-        └── EmployeeStats.vue# 分类统计（部门 / 职位明细）
+        ├── Login.vue            # 登录页
+        ├── Profile.vue          # 个人中心（信息/密码/头像）
+        ├── GroupChat.vue        # 群聊（部门群 + 全员群，5 秒轮询）
+        ├── PrivateChat.vue      # 职员私聊
+        ├── MuteManagement.vue   # 禁言管理（管理层）
+        ├── PresidentManage.vue  # 总裁管理（管理层任免）
+        ├── Dashboard.vue        # 信息面板·仪表盘（管理层）
+        ├── EmployeeList.vue     # 员工管理（管理层）
+        └── EmployeeStats.vue    # 分类统计（管理层）
 ```
 
 ## 运行方法
 
-### 1. 启动后端（端口 8000）
+### 1. 初始化数据库（首次）
+
+```bash
+cd MySQL_Project_backend
+python migrate.py        # 加列 + 预置角色 + 写入默认密码 123456
+```
+
+### 2. 启动后端（端口 8000）
 
 ```bash
 cd MySQL_Project_backend
@@ -45,7 +78,7 @@ python -m uvicorn main:app --reload --port 8000
 
 > 数据库连接配置在 `MySQL_Project_backend/database.py` 中，如账号密码不同请自行修改。
 
-### 2. 启动前端（端口 5173）
+### 3. 启动前端（端口 5173）
 
 ```bash
 # 首次运行先安装依赖
@@ -55,41 +88,44 @@ npm install
 npm run dev
 ```
 
-浏览器访问 http://localhost:5173 （若 5173 被占用，Vite 会自动改用其它端口，以终端提示为准）。
-开发模式下 `/api` 请求由 Vite 代理到 `http://127.0.0.1:8000`，无需额外配置跨域。
+浏览器访问 http://localhost:5173。开发模式下 `/api` 与 `/uploads` 由 Vite 代理到
+`http://127.0.0.1:8000`，无需额外跨域配置。
 
-### 3. 生产构建
+### 4. 生产构建
 
 ```bash
 npm run build     # 产物输出到 dist/
 ```
 
+> 生产环境需将 `/api` 与 `/uploads` 反向代理到 8000。
+
 ## 功能清单
 
-- **仪表盘**：员工 / 部门 / 职位总数、平均/最高/最低薪资统计卡片；各部门人数分布、各部门平均薪资、
-  各职位人数占比、入职年份趋势四张图表；最近入职员工列表。
-- **员工管理**：新增、编辑、单个/批量删除员工；姓名/邮箱关键字、部门、职位、薪资区间、入职日期区间
-  多条件组合查询；服务端分页（每页 10/20/50/100 可切换）。
-- **分类统计**：部门维度（员工数、占比、平均薪资）与职位维度（员工数、薪资区间）明细表，附分布图表。
-- **中文界面**：所有字段名、表头、按钮、提示均为中文；部门/职位展示中文名（映射缺失时回退英文）。
+- **登录**：账号为姓名（英文不区分大小写），默认密码 `123456`，token 会话 + 路由守卫；未登录自动跳登录页。
+- **个人中心**：查看/修改联系信息、修改密码、上传图片头像（JPG/PNG/GIF/WebP，≤5MB）。
+- **群聊**（类似多人邮箱，消息持久化）：每个职员自动拥有「部门群聊」（仅同部门）与「全员群聊」（全部部门）；分页加载历史 + 5 秒轮询新消息。
+- **私聊**：搜索并选择任意职员一对一聊天，消息持久化；**会话列表**按最近消息排序（新消息置顶），收到私聊显示**未读红点+数量**（含侧边栏「私聊」菜单角标），打开会话即标记已读。
+- **员工管理**（管理层）：对普通职员增删改查、多条件查询、分页；新增职员默认密码 `123456`，账号（姓名）唯一性校验。
+- **信息面板**（管理层）：仪表盘总览与部门/职位分类统计。
+- **禁言管理**（管理层）：对普通职员限时/永久禁言；禁言期间不能群聊发言，可查看、可私聊。
+- **总裁管理**（总裁）：授予/撤销普通职员的管理权限，管理部门名单管理。
+- **安全**：密码 PBKDF2 哈希存储；接口统一角色鉴权（普通职员越权返回 403）；登录 token HMAC 签名。
 
 ## 后端接口（`/api/v1`）
 
-| 方法 | 路径 | 说明 |
-|---|---|---|
-| GET | `/employees/search` | 组合查询 + 分页，返回 `{total, page, page_size, items}` |
-| GET | `/employees` | 基础分页列表（skip / limit） |
-| GET | `/employees/{id}` | 按 ID 查询 |
-| POST | `/employees` | 新增（ID 由后端自动生成） |
-| PUT | `/employees/{id}` | 更新 |
-| DELETE | `/employees/{id}` | 删除（204） |
-| GET | `/find/{name}` | 姓名模糊查找 |
-| GET | `/departments` | 部门列表 |
-| GET | `/jobs` | 职位列表 |
-| GET | `/overview` | 仪表盘总览统计 |
+| 分组 | 接口 |
+|---|---|
+| 认证 | `POST /auth/login`、`POST /auth/logout`、`GET /auth/me` |
+| 个人中心 | `PUT /me`、`PUT /me/password`、`POST /me/avatar` |
+| 群聊 | `GET /groups/my`、`GET/POST /groups/dept/messages`、`GET/POST /groups/all/messages` |
+| 私聊 | `GET /contacts`、`GET/POST /private/messages`、`GET /private/conversations`、`POST /private/read`、`GET /private/unread-total` |
+| 禁言 | `GET/POST /mutes`、`DELETE /mutes/{id}` |
+| 总裁管理 | `GET/POST /managers`、`DELETE /managers/{id}` |
+| 员工管理（管理层） | `GET /employees/search`、`POST/PUT/DELETE /employees/{id}` 等 |
+| 统计（管理层） | `GET /overview`、`GET /departments`、`GET /jobs` |
 
 ## 说明
 
-- 数据库中 `t_employees` 各列均为 `varchar`（含主键 `EMPLOYEE_ID`，无自增），后端在数值聚合与新增
-  时已做转数值处理，新增编号取当前最大值 + 1。
-- 后端原新增接口存在主键无默认值导致插入失败的问题，本次已在 `create_employee` 中修复。
+- 数据库中 `t_employees` 各列均为 `varchar`（含主键 `EMPLOYEE_ID`），ORM 读取主键时为字符串，
+  跨表映射处已统一 `int()` 归一化（详见开发问题文档 P15）。
+- 新表 `t_group_messages` / `t_private_messages` / `t_mutes` 由 SQLAlchemy 启动时自动创建。

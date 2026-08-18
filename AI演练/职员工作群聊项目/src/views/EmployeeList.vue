@@ -129,6 +129,13 @@
             <span class="name-cell">{{ row.FIRST_NAME }} {{ row.LAST_NAME }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="角色" min-width="110">
+          <template #default="{ row }">
+            <el-tag size="small" :type="roleTagType(row.ROLE)" effect="light">
+              {{ roleLabel(row.ROLE) }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="EMAIL" label="邮箱" min-width="140" />
         <el-table-column prop="PHONE_NUMBER" label="联系电话" min-width="130" />
         <el-table-column prop="HIRE_DATE" label="入职日期" width="112" sortable />
@@ -337,6 +344,13 @@ function deptName(row) {
 }
 function jobName(row) {
   return jobLabel(row.JOB_ID) || formatEmpty(row.JOB_ID)
+}
+const ROLE_LABELS = { STAFF: '普通职员', MANAGER: '管理部门职员', PRESIDENT: '总裁' }
+function roleLabel(role) {
+  return ROLE_LABELS[role] || role || '—'
+}
+function roleTagType(role) {
+  return { STAFF: 'info', MANAGER: 'warning', PRESIDENT: 'danger' }[role] || 'info'
 }
 
 /* ---------- 查询条件与分页 ---------- */

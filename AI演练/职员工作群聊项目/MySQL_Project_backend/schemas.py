@@ -1,5 +1,5 @@
 from typing import Optional, List
-from datetime import date
+from datetime import date, datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -39,6 +39,8 @@ class EmployeeUpdateSchema(BaseModel):
 class EmployeeResponseSchema(EmployeeBase):
     """员工返回响应模型"""
     EMPLOYEE_ID: int
+    ROLE: str = Field(default="STAFF", description="角色:STAFF/MANAGER/PRESIDENT")
+    AVATAR: Optional[str] = Field(None, description="头像文件路径")
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -79,3 +81,144 @@ class OverviewResponseSchema(BaseModel):
     department_stats: List[dict] = Field(..., description="部门维度统计")
     job_stats: List[dict] = Field(..., description="职位维度统计")
     hire_year_distribution: List[dict] = Field(..., description="入职年份分布")
+
+
+# ============ V2.0 新增:登录 / 个人中心 ============
+
+class LoginRequestSchema(BaseModel):
+    """登录请求模型(账号为姓名,英文不区分大小写)"""
+    username: str = Field(..., min_length=1, max_length=100, description="账号(姓名)")
+    password: str = Field(..., min_length=1, max_length=100, description="密码")
+
+
+class UserInfoSchema(BaseModel):
+    """当前登录用户信息"""
+    EMPLOYEE_ID: int
+    name: str = Field(..., description="姓名(账号)")
+    FIRST_NAME: str
+    LAST_NAME: str
+    EMAIL: Optional[str] = None
+    PHONE_NUMBER: Optional[str] = None
+    role: str = Field(..., description="角色")
+    avatar: Optional[str] = None
+    JOB_ID: Optional[str] = None
+    DEPARTMENT_ID: Optional[int] = None
+
+
+class LoginResponseSchema(BaseModel):
+    """登录响应"""
+    token: str
+    user: UserInfoSchema
+
+
+class UpdateProfileSchema(BaseModel):
+    """修改个人信息(仅联系信息,姓名/角色/部门不可自行修改)"""
+    EMAIL: Optional[str] = Field(None, min_length=1, max_length=50)
+    PHONE_NUMBER: Optional[str] = Field(None, min_length=1, max_length=50)
+
+
+class UpdatePasswordSchema(BaseModel):
+    """修改密码"""
+    old_password: str = Field(..., min_length=1, max_length=100)
+    new_password: str = Field(..., min_length=1, max_length=100)
+
+
+# ============ V2.0 新增:群聊 / 私聊 ============
+
+class MessageSendSchema(BaseModel):
+    """发送消息请求"""
+    content: str = Field(..., min_length=1, max_length=2000, description="消息内容")
+
+
+class PrivateMessageSendSchema(BaseModel):
+    """发送私聊请求"""
+    receiver_id: int = Field(..., description="接收者员工ID")
+    content: str = Field(..., min_length=1, max_length=2000, description="消息内容")
+
+
+class MessageResponseSchema(BaseModel):
+    """消息返回模型"""
+    message_id: int
+    group_type: Optional[str] = None
+    group_id: Optional[int] = None
+    sender_id: int
+    sender_name: str
+    sender_avatar: Optional[str] = None
+    receiver_id: Optional[int] = None
+    content: str
+    created_at: str
+
+
+class GroupInfoSchema(BaseModel):
+    """群聊信息"""
+    group_type: str
+    group_id: int
+    name: str
+    member_count: int
+    last_message: Optional[str] = None
+    last_time: Optional[str] = None
+
+
+class MyGroupsResponseSchema(BaseModel):
+    """我的群聊列表"""
+    groups: List[GroupInfoSchema]
+
+
+class ContactSchema(BaseModel):
+    """可私聊联系人"""
+    EMPLOYEE_ID: int
+    name: str
+    DEPARTMENT_ID: Optional[int] = None
+    role: str
+    avatar: Optional[str] = None
+
+
+class ConversationSchema(BaseModel):
+    """私聊会话(按最近消息排序,含未读数)"""
+    EMPLOYEE_ID: int
+    name: str
+    avatar: Optional[str] = None
+    role: str
+    DEPARTMENT_ID: Optional[int] = None
+    last_message: Optional[str] = None
+    last_time: Optional[str] = None
+    unread_count: int = 0
+
+
+class MarkReadSchema(BaseModel):
+    """标记会话已读请求"""
+    contact_id: int = Field(..., description="对方员工ID")
+
+
+# ============ V2.0 新增:禁言 / 总裁管理 ============
+
+class MuteCreateSchema(BaseModel):
+    """禁言请求"""
+    employee_id: int = Field(..., description="被禁言员工ID")
+    reason: str = Field(..., min_length=1, max_length=200, description="禁言原因")
+    mute_minutes: Optional[int] = Field(None, ge=1, description="禁言时长(分钟),为空表示永久")
+
+
+class MuteResponseSchema(BaseModel):
+    """禁言记录返回"""
+    mute_id: int
+    employee_id: int
+    employee_name: str
+    operator_id: int
+    operator_name: str
+    reason: str
+    mute_until: Optional[str] = None
+    created_at: str
+
+
+class ManagerGrantSchema(BaseModel):
+    """授予/撤销管理权限请求"""
+    employee_id: int = Field(..., description="目标员工ID")
+
+
+class ManagerResponseSchema(BaseModel):
+    """管理部门职员信息"""
+    EMPLOYEE_ID: int
+    name: str
+    role: str
+    DEPARTMENT_ID: Optional[int] = None

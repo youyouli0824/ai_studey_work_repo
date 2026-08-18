@@ -18,6 +18,11 @@ export default defineConfig({
       '/api': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true
+      },
+      // 头像等静态资源
+      '/uploads': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true
       }
     }
   }

@@ -8,6 +8,11 @@ dist/
 .vscode/*
 !.vscode/extensions.json
 
+# Python 编译缓存与上传文件
+__pycache__/
+*.pyc
+MySQL_Project_backend/uploads/
+
 # 日志与临时文件
 *.log
 npm-debug.log*
