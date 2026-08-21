@@ -5,7 +5,7 @@
       <div class="brand">
         <el-icon :size="26" color="#fff"><OfficeBuilding /></el-icon>
         <div class="brand-text">
-          <div class="brand-title">职员各部门工作交流系统</div>
+          <div class="brand-title">职员各部门<br />工作交流系统</div>
           <div class="brand-sub">Staff Communication</div>
         </div>
       </div>
@@ -179,7 +179,8 @@ async function handleLogout() {
   font-size: 15px;
   font-weight: 600;
   letter-spacing: 1px;
-  white-space: nowrap;
+  line-height: 1.35;
+  white-space: nowrap; /* 配合模板中的 <br> 手动换行,避免在宽度内自行折行 */
 }
 
 .brand-sub {

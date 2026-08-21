@@ -338,6 +338,8 @@ onBeforeUnmount(() => {
 <style scoped>
 .chat-page {
   height: calc(100vh - 60px);
+  min-height: 0;
+  overflow: hidden; /* 页面整体固定,滚动只发生在内部列表 */
   display: flex;
   background: #fff;
 }
@@ -348,6 +350,8 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .list-tabs {
@@ -355,29 +359,36 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   padding: 0 4px;
+  min-height: 0;
 }
 .list-tabs :deep(.el-tabs__header) {
   margin-bottom: 0;
   padding: 0 12px;
+  flex-shrink: 0;
 }
 .list-tabs :deep(.el-tabs__content) {
   flex: 1;
   overflow: hidden;
   display: flex;
+  min-height: 0;
 }
 .list-tabs :deep(.el-tab-pane) {
   height: 100%;
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .list-search {
   padding: 10px 12px 6px;
+  flex-shrink: 0;
 }
 
 .list-body {
   flex: 1;
   overflow-y: auto;
+  min-height: 0;
   padding: 4px 0 8px;
 }
 
@@ -449,6 +460,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
 }
 
 .window-header {
@@ -457,6 +469,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .header-avatar {
@@ -478,6 +491,7 @@ onBeforeUnmount(() => {
 .message-box {
   flex: 1;
   overflow-y: auto;
+  min-height: 0;
   padding: 16px 20px;
   background: #f8fafc;
 }
@@ -570,6 +584,7 @@ onBeforeUnmount(() => {
 .input-area {
   border-top: 1px solid #eef2f7;
   padding: 10px 16px 12px;
+  flex-shrink: 0;
 }
 
 .input-actions {
