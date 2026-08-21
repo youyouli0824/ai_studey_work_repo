@@ -170,7 +170,7 @@ def check_manage_scope(operator: EmployeeModel, target: EmployeeModel):
     """管理层操作范围校验: 不能操作自己;管理部门职员仅能操作普通职员,总裁可操作管理层以下"""
     if operator.EMPLOYEE_ID == target.EMPLOYEE_ID:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="不能操作本人")
-    allowed = (ROLE_MANAGER, ROLE_PRESIDENT) if operator.ROLE == ROLE_PRESIDENT else (ROLE_STAFF,)
+    allowed = (ROLE_STAFF, ROLE_MANAGER) if operator.ROLE == ROLE_PRESIDENT else (ROLE_STAFF,)
     if target.ROLE not in allowed:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="无权操作该角色的职员")
 
