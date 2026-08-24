@@ -1,0 +1,21 @@
+# 环境变量（含密钥）—— 必须忽略
+.env
+**/.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# IDE / 编辑器
+.idea/
+.vscode/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 日志 / 临时文件
+*.log
