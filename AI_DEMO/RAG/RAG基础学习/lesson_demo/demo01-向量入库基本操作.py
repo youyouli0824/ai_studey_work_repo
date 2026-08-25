@@ -32,9 +32,3 @@ print(results)
 # 查询向量，返回距离最近的2个向量
 res=collection.query(query_embeddings=[4, 5, 6],n_results=2)
 print(res.get('documents')[0])
-
-
-
-
-
-
