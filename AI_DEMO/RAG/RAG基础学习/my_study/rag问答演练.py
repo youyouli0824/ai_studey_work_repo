@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 import sys
+import logging
 
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -8,6 +9,11 @@ import chromadb
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTTextContainer
 from sentence_transformers import SentenceTransformer
+
+# 只输出 DeepSeek 的回答，屏蔽向量库/模型加载等检索相关的日志噪音
+logging.getLogger("sentence_transformers").setLevel(logging.WARNING)
+logging.getLogger("transformers").setLevel(logging.WARNING)
+logging.getLogger("chromadb").setLevel(logging.WARNING)
 
 # 路径都相对于本脚本所在目录，避免换了工作目录就跑不起来
 BASE_DIR = Path(__file__).resolve().parent
@@ -28,7 +34,7 @@ class MyVectorDBConnector:
         # BGE 官方建议：检索用的短查询加上这句前缀效果更好；入库文档不用加
         if is_query:
             texts = ["为这个句子生成表示以用于检索相关文章：" + t for t in texts]
-        return self.embedder.encode(texts, normalize_embeddings=True).tolist()
+        return self.embedder.encode(texts, normalize_embeddings=True, show_progress_bar=False).tolist()
 
     #变成向量后，添加到向量数据库（upsert 保证重复运行不会因为 id 重复报错）
     def add_document(self,documents):
@@ -105,7 +111,6 @@ class MyChatBot:
         #拼接检索上下文
         context="\n".join(search_results['documents'][0])
         prompt=prompt_template.replace("__INFO__",context).replace("__QUERY__",user_query)
-        #print("prompt",prompt)
         return self.get_chat_completion(prompt)
 
 if __name__ == "__main__":
@@ -117,13 +122,11 @@ if __name__ == "__main__":
     vector_db=MyVectorDBConnector("mytest")
     #加载原始文档，分段
     documents=extract_text_from_pdf(str(PDF_PATH))
-    #print(documents)
     vector_db.add_document(documents)
 
     user_query="财务管理权限划分？"
 
     result=vector_db.search(user_query,3)
-    #print(result)
     bot=MyChatBot(vector_db)
     response=bot.chat(user_query)
 
