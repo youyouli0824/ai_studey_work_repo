@@ -165,7 +165,7 @@ class RAGSystem:
         vs = self.vector_store()
 
         # 1) Query 向量化 + 余弦 top-k 检索
-        hits = retrieve(emb, vs, question, top_k=s.sim_top_k)
+        hits = retrieve(emb, vs, question, top_k=s.sim_top_k, verbose=verbose)
         if verbose:
             print("\n[检索] 召回的 top-{} 片段：".format(s.sim_top_k))
             for i, h in enumerate(hits, 1):

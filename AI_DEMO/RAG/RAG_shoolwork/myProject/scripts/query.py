@@ -9,13 +9,26 @@
     python scripts/query.py "公司年终奖发放规则"     # 知识库外问题，应回复"不知道"
 """
 import argparse
+import os
 import sys
+from contextlib import redirect_stdout
+from io import StringIO
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+# 静默模型加载时的 tqdm 进度条（Loading weights: ...）
+os.environ.setdefault("HF_HUB_DISABLE_PROGRESS_BARS", "1")
+
 from config import settings
 from app.pipeline import RAGSystem
+
+
+def ask_quiet(rag: RAGSystem, question: str, use_rerank: bool) -> str:
+    """执行问答，只返回 DeepSeek 的回答，屏蔽模型加载/检索等全部日志输出。"""
+    with redirect_stdout(StringIO()):
+        result = rag.ask(question, use_rerank=use_rerank, verbose=False)
+    return result.answer
 
 
 def main() -> None:
@@ -27,7 +40,7 @@ def main() -> None:
     rag = RAGSystem(settings)
 
     if args.question:
-        rag.ask(args.question, use_rerank=not args.no_rerank)
+        print("ai回答：" + ask_quiet(rag, args.question, not args.no_rerank))
         return
 
     print("进入交互问答模式（输入 exit 退出）")
@@ -42,7 +55,7 @@ def main() -> None:
         if q.lower() in ("exit", "quit", "退出"):
             break
         try:
-            result = rag.ask(q, use_rerank=not args.no_rerank)
+            print("ai回答：" + ask_quiet(rag, q, not args.no_rerank))
         except Exception as exc:
             print(f"[错误] {type(exc).__name__}: {exc}")
 

@@ -16,11 +16,13 @@ def retrieve(
     vector_store: VectorStore,
     query: str,
     top_k: int,
+    verbose: bool = True,
 ) -> List[SearchHit]:
     """执行检索，返回按余弦相似度降序排列的 top-k 片段。"""
     # 1) Query 向量化（与索引阶段使用同一 Embedding 模型，保证向量空间一致）
     query_vector = embedding.embed_query(query)
     # 2) 向量库底层余弦相似度 top-k 检索
     hits = vector_store.search(query_vector, top_k=top_k)
-    print(f"[检索] query 向量维度：{len(query_vector)}，召回 top-{top_k} 片段")
+    if verbose:
+        print(f"[检索] query 向量维度：{len(query_vector)}，召回 top-{top_k} 片段")
     return hits
