@@ -1,0 +1,26 @@
+# 环境变量（含密钥）—— 必须忽略，密钥绝不入库
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 大模型权重文件（不交付，太大）
+models/
+
+# 向量库持久化数据（可由脚本重建，不交付）
+vector_db/
+
+# IDE / 编辑器
+.idea/
+.vscode/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 日志 / 临时文件
+*.log
