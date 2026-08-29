@@ -1,0 +1,6 @@
+# Python 缓存
+__pycache__/
+*.pyc
+
+# FAISS 向量库（构建后生成，不入库）
+vector_db/

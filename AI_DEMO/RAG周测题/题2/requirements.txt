@@ -1,0 +1,27 @@
+# ============================================================
+#  企业制度 RAG 问答系统 依赖清单（题2）
+#  安装：python -m pip install -r requirements.txt
+# ============================================================
+
+# ---- LangChain 框架（1.x） ----
+langchain>=1.3.0
+langchain-core>=1.0.0
+langchain-community>=0.4.0
+# legacy chains：create_stuff_documents_chain / create_retrieval_chain
+langchain-classic>=1.0.0
+# ChatOpenAI（OpenAI 兼容接口，用于调用 DeepSeek）
+langchain-openai>=1.0.0
+# RecursiveCharacterTextSplitter 递归文本切分
+langchain-text-splitters>=1.0.0
+
+# ---- 向量化：DashScope Embedding ----
+dashscope>=1.0
+
+# ---- PDF 文档加载 ----
+pypdf>=4.0
+
+# ---- FAISS 向量库（本地持久化） ----
+faiss-cpu>=1.7
+
+# ---- 配置管理（.env） ----
+python-dotenv>=1.0

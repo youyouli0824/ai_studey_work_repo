@@ -1,0 +1,17 @@
+# ============================================================
+#  FAQ 语义匹配 RAG 系统 依赖清单（题1）
+#  安装：python -m pip install -r requirements.txt
+# ============================================================
+
+# ---- 向量数据库（Chroma 持久化） ----
+chromadb>=1.5.0,<2.0
+
+# ---- 本地 BGE 向量模型（USE_LOCAL_EMBED=True 时使用） ----
+sentence-transformers>=3.0
+torch>=2.0
+
+# ---- 在线 DashScope Embedding（USE_LOCAL_EMBED=False 时使用，OpenAI 兼容） ----
+openai>=1.0
+
+# ---- 配置管理 ----
+python-dotenv>=1.0
