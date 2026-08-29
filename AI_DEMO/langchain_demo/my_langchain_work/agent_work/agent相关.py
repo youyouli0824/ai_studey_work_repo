@@ -35,7 +35,7 @@ docs=loader.load()
 documents=RecursiveCharacterTextSplitter(chunk_size=1000,chunk_overlap=200).split_documents(docs)
 
 #文档向量化
-vector=FAISS.from_documents(documents,DashScopeEmbeddings(api_key=os.getenv("API_KEY")))
+vector=FAISS.from_documents(documents,DashScopeEmbeddings(dashscope_api_key=os.getenv("DASHSCOPE_API_KEY")))
 
 #创建检索器
 retriever=vector.as_retriever()
