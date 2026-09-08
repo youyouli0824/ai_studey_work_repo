@@ -22,3 +22,4 @@ class Config:
     CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", 1000))
     CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", 200))
     TOP_K = int(os.getenv("TOP_K", 5))
+    EMBED_MODEL_PATH = os.getenv("EMBED_MODEL_PATH")
